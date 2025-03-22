@@ -27,16 +27,6 @@ async def root():
 
 app.include_router(calculator_router, prefix="/calculate", tags=["calculate"])
 
-from fastapi import Request
-from fastapi.responses import JSONResponse
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal Server Error", "error": str(exc)},
-    )
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_URL, port=int(PORT), reload=(ENV == "dev"))

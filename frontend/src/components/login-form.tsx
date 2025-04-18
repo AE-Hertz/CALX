@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Logo from "@/assets/leaf.png";
+import Logo from "@/assets/calculator.png";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6 m-2", className)} {...props}>
       <div className="m-auto size-20 flex items-center justify-center p-3 rounded-full">
-        <img src={Logo} alt="Logo" width="100" />
+        <img src={Logo} alt="Logo" width="100" className="mr-2" />
         <div className="font-bold text-4xl tracking-wide">CALX</div>
       </div>
       <Card>

@@ -5,11 +5,16 @@ import Home from "@/screens/home";
 import "@/index.css";
 import LoginPage from "./screens/Login";
 import SignUpPage from "./screens/Signup";
+import ProtectedRoute from "./components/ProtectedRoute"; // 👈
 
 const paths = [
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",

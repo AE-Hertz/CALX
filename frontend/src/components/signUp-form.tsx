@@ -12,7 +12,9 @@ import { Label } from "@/components/ui/label";
 import Logo from "@/assets/leaf.png";
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase";
 
 type SignUpInputTypes = {
   email: string;
@@ -31,28 +33,42 @@ export function SignUpForm({
     formState: { errors },
   } = useForm<SignUpInputTypes>();
 
-  // Submit handler Function
-  const submit: SubmitHandler<SignUpInputTypes> = (data) => {
-    console.log("im called");
-    console.log("data", data);
-    console.log("errors", errors);
-    console.log(watch("email")); // watch input value by passing the name of it
-    console.log(watch("password")); // watch input value by passing the name of it
-  };
+  const navigate = useNavigate(); // 👈 for programmatic navigation
 
   const validateConfirmPassword = (value: string) => {
     return value === watch("password") || "Passwords do not match";
   };
 
+  const submit: SubmitHandler<SignUpInputTypes> = async (data) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      console.log("User signed up:", userCredential.user);
+      alert("Signup successful!");
+      navigate("/login"); // 👈 redirect to login
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Signup error:", error);
+        alert(error.message);
+      } else {
+        console.error("Signup error:", error);
+        alert("An unknown error occurred.");
+      }
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6 m-2 ", className)} {...props}>
-      <div className="m-auto size-20 flex items-center justify-center p-3 rounded-full  ">
+      <div className="m-auto size-20 flex items-center justify-center p-3 rounded-full">
         <img src={Logo} alt="Logo" width="100" />
         <div className="font-bold text-4xl tracking-wide">CALX</div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Register </CardTitle>
+          <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
             Enter your credentials below to create a new account
           </CardDescription>
@@ -82,16 +98,14 @@ export function SignUpForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
-                  required
                   {...register("password", {
                     required: "Password is required",
                   })}
+                  required
                 />
                 {errors.password && (
                   <div className="text-red-500 text-sm">
@@ -100,17 +114,15 @@ export function SignUpForm({
                 )}
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Confirm Password</Label>
-                </div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
-                  required
                   {...register("confirmPassword", {
                     required: "Password is required",
                     validate: validateConfirmPassword,
                   })}
+                  required
                 />
                 {errors.confirmPassword && (
                   <div className="text-red-500 text-sm">

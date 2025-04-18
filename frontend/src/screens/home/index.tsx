@@ -145,7 +145,7 @@ export default function Home() {
          setPages(parsedPages);
          if (parsedPages.length > 0) {
             const lastActivePage = lastActivePageId
-               ? parsedPages.find((p) => p.id === lastActivePageId)
+               ? parsedPages.find((p: { id: string }) => p.id === lastActivePageId)
                : null;
             setCurrentPage(lastActivePage || parsedPages[0]);
          }
@@ -442,7 +442,7 @@ export default function Home() {
                <Draggable
                   key={index}
                   defaultPosition={latexPosition}
-                  onStop={(e, data) =>
+                  onStop={(_, data) =>
                      setLatexPosition({ x: data.x, y: data.y })
                   }
                >

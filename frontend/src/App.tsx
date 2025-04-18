@@ -5,7 +5,7 @@ import Home from "@/screens/home";
 import "@/index.css";
 import LoginPage from "./screens/Login";
 import SignUpPage from "./screens/Signup";
-import ProtectedRoute from "./components/ProtectedRoute"; // 👈
+import ProtectedRoute from "@/components/protectedRoute"; 
 
 const paths = [
   {

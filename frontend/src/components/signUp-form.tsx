@@ -15,6 +15,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 type SignUpInputTypes = {
   email: string;
@@ -33,13 +35,16 @@ export function SignUpForm({
     formState: { errors },
   } = useForm<SignUpInputTypes>();
 
-  const navigate = useNavigate(); // 👈 for programmatic navigation
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const validateConfirmPassword = (value: string) => {
     return value === watch("password") || "Passwords do not match";
   };
 
   const submit: SubmitHandler<SignUpInputTypes> = async (data) => {
+    setLoading(true);
+    const toastId = toast.loading("Creating account...");
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -47,21 +52,22 @@ export function SignUpForm({
         data.password
       );
       console.log("User signed up:", userCredential.user);
-      alert("Signup successful!");
-      navigate("/login"); // 👈 redirect to login
+      toast.success("Signup successful!", { id: toastId });
+      navigate("/login");
     } catch (error: unknown) {
+      console.error("Signup error:", error);
       if (error instanceof Error) {
-        console.error("Signup error:", error);
-        alert(error.message);
+        toast.error(error.message, { id: toastId });
       } else {
-        console.error("Signup error:", error);
-        alert("An unknown error occurred.");
+        toast.error("An unknown error occurred.", { id: toastId });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 m-2 ", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 m-2", className)} {...props}>
       <div className="m-auto size-20 flex items-center justify-center p-3 rounded-full">
         <img src={Logo} alt="Logo" width="100" />
         <div className="font-bold text-4xl tracking-wide">CALX</div>
@@ -130,8 +136,8 @@ export function SignUpForm({
                   </div>
                 )}
               </div>
-              <Button type="submit" className="w-full active:scale-95">
-                Register
+              <Button type="submit" className="w-full active:scale-95" disabled={loading}>
+                {loading ? "Registering..." : "Register"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

@@ -6,6 +6,7 @@ import "@/index.css";
 import LoginPage from "./screens/Login";
 import SignUpPage from "./screens/Signup";
 import ProtectedRoute from "@/components/protectedRoute"; 
+import { Toaster } from "react-hot-toast";
 
 const paths = [
   {
@@ -32,6 +33,7 @@ const App = () => {
   return (
     <MantineProvider>
       <RouterProvider router={BrowserRouter} />
+      <Toaster position="top-right" />
     </MantineProvider>
   );
 };

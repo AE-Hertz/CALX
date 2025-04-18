@@ -15,6 +15,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 type LoginInputTypes = {
   email: string;
@@ -31,9 +33,12 @@ export function LoginForm({
     formState: { errors },
   } = useForm<LoginInputTypes>();
 
-  const navigate = useNavigate(); // 👈 for programmatic navigation
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const submit: SubmitHandler<LoginInputTypes> = async (data) => {
+    setLoading(true);
+    const toastId = toast.loading("Logging in...");
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -41,16 +46,18 @@ export function LoginForm({
         data.password
       );
       console.log("Logged in user:", userCredential.user);
-      alert("Login successful!");
-      navigate("/"); // 👈 redirect to home
+      toast.success("Login successful!", { id: toastId });
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Invalid email or password.");
+      toast.error("Invalid email or password.", { id: toastId });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 m-2 ", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 m-2", className)} {...props}>
       <div className="m-auto size-20 flex items-center justify-center p-3 rounded-full">
         <img src={Logo} alt="Logo" width="100" />
         <div className="font-bold text-4xl tracking-wide">CALX</div>
@@ -110,8 +117,8 @@ export function LoginForm({
                   </div>
                 )}
               </div>
-              <Button type="submit" className="w-full active:scale-95">
-                Login
+              <Button type="submit" className="w-full active:scale-95" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
